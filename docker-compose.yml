@@ -1,4 +1,4 @@
-version: "3.2"
+version: '3.2'
 services:
   app:
     command: node ./dist/server.js
@@ -6,12 +6,17 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - published: 7777
-        target: 7777
+      - ${PORT:-7777}:${PORT:-7777}
     environment:
       JWT_SECRET: ${JWT_SECRET}
+      PORT: ${PORT:-7777}
+      OMDB_API_KEY: ${OMDB_API_KEY:-46eee6e}
+      DB_USER: ${DB_USER:-user}
+      DB_PASSWORD: ${DB_PASSWORD:-pass}
+      DB_NAME: ${DB_NAME:-db}
+      DB_HOST: ${DB_HOST:-postgres}
     depends_on:
-      - "postgres"
+      - 'postgres'
   postgres:
     container_name: postgres_container
     image: postgres
@@ -20,5 +25,5 @@ services:
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: db
     ports:
-      - "5432:5432"
+      - '5432:5432'
     restart: unless-stopped
