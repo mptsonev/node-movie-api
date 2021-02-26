@@ -10,7 +10,7 @@ services:
     environment:
       JWT_SECRET: ${JWT_SECRET}
       PORT: ${PORT:-7777}
-      OMDB_API_KEY: ${OMDB_API_KEY:-46eee6e}
+      OMDB_API_KEY: ${OMDB_API_KEY:-46eee6}
       DB_USER: ${DB_USER:-user}
       DB_PASSWORD: ${DB_PASSWORD:-pass}
       DB_NAME: ${DB_NAME:-db}

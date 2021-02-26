@@ -1,4 +1,5 @@
 import https from 'https';
+import { OMDB_API_KEY } from '../config';
 
 interface MovieData {
   title: string;
@@ -7,19 +8,22 @@ interface MovieData {
   director: string;
 }
 
-const getOMDBData = (title: String) => {
-  const API_KEY = process.env.OMDB_API_KEY;
+const OMDB_API_URL = 'https://www.omdbapi.com/';
+
+const getOMDBData = (title: String): Promise<MovieData> => {
   let body = '';
   return new Promise<MovieData>((resolve, reject) => {
-    https.get(`https://www.omdbapi.com/?t=${title}&apikey=${API_KEY}`, res => {
+    https.get(`${OMDB_API_URL}?t=${title}&apikey=${OMDB_API_KEY}`, res => {
       res.on('data', data => {
         body += data;
       });
       res.on('end', () => {
-        if (res.statusCode != 200) {
-          reject(body);
+        const parsedJSON = JSON.parse(body);
+        if (res.statusCode != 200 || !!parsedJSON.Error) {
+          console.error('Failed to get OMDB data', body);
+          reject('Failed to get OMDB data');
         } else {
-          const parsed = parseOmdbDataBody(body);
+          const parsed = parseOmdbDataBody(parsedJSON);
           resolve(parsed);
         }
       });
@@ -31,13 +35,12 @@ const getOMDBData = (title: String) => {
 };
 
 const parseOmdbDataBody = (body: any): MovieData => {
-  const parsed = JSON.parse(body);
   const {
     Title: movieTitle,
     Released: released,
     Genre: genre,
     Director: director,
-  } = parsed;
+  } = body;
   const releasedDateIso = new Date(released).toISOString();
   return {
     title: movieTitle,

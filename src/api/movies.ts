@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { Model } from 'sequelize';
 import connection from '../sequelize';
 import {
   createMovie,
@@ -7,95 +8,64 @@ import {
 } from '../sequelize/models/movie';
 import { getOMDBData } from './omdbClient';
 
-interface ErrorResponse {
+class ApiError extends Error {
   status: number;
   message: string;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.status = status;
+  }
 }
 
-const getMoviesRequest = (response: Response) => {
-  getAllMovies(connection)
-    .then(movies => {
-      response.status(200).json(movies);
-    })
-    .catch(err => {
-      console.log('Cannot get movies from DB', err);
-      response.status(500).json({ error: 'Something went wrong!' });
-    });
+const getMoviesRequest = async (response: Response) => {
+  const movies = await getAllMovies(connection);
+  response.status(200).json(movies);
 };
 
-const createMovieRequest = (request: Request, response: Response) => {
+const createMovieRequest = async (request: Request, response: Response) => {
   const { role, name: userName } = response.locals;
   const { title } = request.body;
   if (!title || !title.trim()) {
-    response.status(400).json({ error: 'Title missing in request body!' });
-    return;
+    throw new ApiError('Title missing in request body!', 400);
   }
 
-  const createPromise =
+  const createdMovie =
     role === 'premium'
-      ? createMoviePremiumUser(title, userName)
-      : createMovieBasicUser(title, userName);
-  createPromise
-    .then(() => {
-      response.status(201).end();
-    })
-    .catch((err: ErrorResponse) => {
-      response.status(err.status).json({ error: err.message });
-    });
+      ? await createMoviePremiumUser(title, userName)
+      : await createMovieBasicUser(title, userName);
+  response.status(201).json(createdMovie);
 };
 
-const createMoviePremiumUser = (
+const createMoviePremiumUser = async (
   title: string,
   userName: string
-): Promise<ErrorResponse> => {
+): Promise<Model<any, any>> => {
   return createMovieInDatabase(title, userName);
 };
 
-const createMovieBasicUser = (
+const createMovieBasicUser = async (
   title: string,
   userName: string
-): Promise<ErrorResponse> => {
-  return new Promise<ErrorResponse>((resolve, reject) => {
-    getCreatedMoviesThisMonth(connection, userName).then(createdCount => {
-      if (createdCount < 5) {
-        return createMovieInDatabase(title, userName)
-          .then(() => {
-            resolve(undefined);
-          })
-          .catch(err => {
-            reject(err);
-          });
-      } else {
-        reject({
-          status: 402,
-          message: 'Movies limit reached, consider upgrading to premium!',
-        });
-      }
-    });
-  });
+): Promise<Model<any, any>> => {
+  const createdMoviesCount = await getCreatedMoviesThisMonth(
+    connection,
+    userName
+  );
+
+  if (createdMoviesCount < 5) {
+    return createMovieInDatabase(title, userName);
+  } else {
+    throw new ApiError('Consider upgrading to premium', 402);
+  }
 };
 
-const createMovieInDatabase = (
+const createMovieInDatabase = async (
   title: string,
   createdBy: string
-): Promise<ErrorResponse> => {
-  return new Promise<ErrorResponse>((resolve, reject) => {
-    getOMDBData(title)
-      .then(data => {
-        createMovie(connection, createdBy, data)
-          .then(() => {
-            resolve(undefined);
-          })
-          .catch(err => {
-            console.log('Cannot create movie in DB', err);
-            reject({ status: 500, message: 'Cannot create movie in DB' });
-          });
-      })
-      .catch(err => {
-        console.log('Cannot fetch OMDB data', err);
-        reject({ status: 500, message: 'Cannot fetch OMDB data' });
-      });
-  });
+): Promise<Model<any, any>> => {
+  const omdbData = await getOMDBData(title);
+  return createMovie(connection, createdBy, omdbData);
 };
 
 export { getMoviesRequest, createMovieRequest };
