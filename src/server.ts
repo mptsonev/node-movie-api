@@ -10,7 +10,7 @@ app.use(express.json());
 app.use('/movies', require('./middleware'));
 
 const errorHandler = (err: any, res: Response) => {
-  const { message = 'Something went wrong', status = 500 } = err;
+  const { message = 'Something went wrong!', status = 500 } = err;
   res.status(status).json({ error: message });
 };
 

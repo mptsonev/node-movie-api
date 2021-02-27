@@ -21,7 +21,16 @@ class ApiError extends Error {
 
 const getMoviesRequest = async (response: Response) => {
   const movies = await getAllMovies(connection);
-  response.status(200).json(movies);
+  const moviesReponse = movies.map(
+    ({ id, title, released, genre, director }) => ({
+      id,
+      title,
+      released,
+      genre,
+      director,
+    })
+  );
+  response.status(200).json({ data: moviesReponse });
 };
 
 const createMovieRequest = async (request: Request, response: Response) => {
@@ -31,11 +40,12 @@ const createMovieRequest = async (request: Request, response: Response) => {
     throw new ApiError('Title missing in request body!', 400);
   }
 
-  const createdMovie =
+  const createdMovie: any =
     role === Role.Premium
       ? await createMoviePremiumUser(title, userName)
       : await createMovieBasicUser(title, userName);
-  response.status(201).json(createdMovie);
+  const { id, released, genre, director } = createdMovie;
+  response.status(201).json({ data: { id, released, genre, director } });
 };
 
 const createMoviePremiumUser = async (
@@ -58,7 +68,7 @@ const createMovieBasicUser = async (
     return createMovieInDatabase(title, userName);
   } else {
     throw new ApiError(
-      'Monthly quota reached, consider upgrading to premium',
+      'Monthly quota reached, consider upgrading to premium!',
       402
     );
   }

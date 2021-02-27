@@ -29,7 +29,7 @@ const getCreatedMoviesThisMonth = (
   });
 };
 
-const getAllMovies = (sequelize: Sequelize): Promise<Model<any, any>[]> => {
+const getAllMovies = (sequelize: Sequelize): Promise<any[]> => {
   return sequelize.models.movie.findAll();
 };
 
