@@ -20,7 +20,7 @@ const getOMDBData = (title: String): Promise<MovieData> => {
       res.on('end', () => {
         const parsedJSON = JSON.parse(body);
         if (res.statusCode != 200 || !!parsedJSON.Error) {
-          console.error('Failed to get OMDB data', body);
+          console.log('Failed to get OMDB data', body);
           reject('Failed to get OMDB data');
         } else {
           const parsed = parseOmdbDataBody(parsedJSON);
