@@ -94,7 +94,9 @@ describe('Tests Movie API', () => {
       fail('It should throw API error');
     } catch (err) {
       const { message, status } = err;
-      expect(message).toEqual('Consider upgrading to premium');
+      expect(message).toEqual(
+        'Monthly quota reached, consider upgrading to premium'
+      );
       expect(status).toEqual(402);
     }
   });

@@ -57,7 +57,10 @@ const createMovieBasicUser = async (
   if (createdMoviesCount < 5) {
     return createMovieInDatabase(title, userName);
   } else {
-    throw new ApiError('Consider upgrading to premium', 402);
+    throw new ApiError(
+      'Monthly quota reached, consider upgrading to premium',
+      402
+    );
   }
 };
 

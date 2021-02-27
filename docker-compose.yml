@@ -16,7 +16,8 @@ services:
       DB_NAME: ${DB_NAME:-db}
       DB_HOST: ${DB_HOST:-postgres}
     depends_on:
-      - 'postgres'
+      postgres:
+        condition: service_healthy
   postgres:
     container_name: postgres_container
     image: postgres
@@ -27,3 +28,8 @@ services:
     ports:
       - '5432:5432'
     restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U user -d db']
+      interval: 5s
+      timeout: 5s
+      retries: 5
