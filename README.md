@@ -185,3 +185,13 @@ Creates a movie and responds with the result
             "error": "Monthly quota reached, consider upgrading to premium!"
         }
         ```
+    OR
+
+    * **Code** 409
+
+      **Content**
+        ```json
+        {
+            "error": "Movie with that title already created!"
+        }
+        ```

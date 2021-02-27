@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Model } from 'sequelize';
+import { Model, UniqueConstraintError } from 'sequelize';
 import connection from '../sequelize';
 import {
   createMovie,
@@ -40,12 +40,21 @@ const createMovieRequest = async (request: Request, response: Response) => {
     throw new ApiError('Title missing in request body!', 400);
   }
 
-  const createdMovie: any =
-    role === Role.Premium
-      ? await createMoviePremiumUser(title, userName)
-      : await createMovieBasicUser(title, userName);
-  const { id, released, genre, director } = createdMovie;
-  response.status(201).json({ data: { id, title, released, genre, director } });
+  try {
+    const createdMovie: any =
+      role === Role.Premium
+        ? await createMoviePremiumUser(title, userName)
+        : await createMovieBasicUser(title, userName);
+    const { id, released, genre, director } = createdMovie;
+    response
+      .status(201)
+      .json({ data: { id, title, released, genre, director } });
+  } catch (err) {
+    if (err instanceof UniqueConstraintError) {
+      throw new ApiError('Movie with that title already created!', 409);
+    }
+    throw err;
+  }
 };
 
 const createMoviePremiumUser = async (

@@ -3,13 +3,40 @@ import { MovieData } from '../../api/omdbClient';
 import { getStartOfMonthISODate } from '../../utils/dateUtils';
 
 const Movie = (sequelize: Sequelize) => {
-  sequelize.define('movie', {
-    title: DataTypes.STRING,
-    released: DataTypes.DATE,
-    genre: DataTypes.STRING,
-    director: DataTypes.STRING,
-    createdBy: DataTypes.STRING,
-  });
+  sequelize.define(
+    'movie',
+    {
+      title: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      released: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
+      genre: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      director: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      createdBy: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+    },
+    {
+      indexes: [
+        {
+          unique: false,
+          fields: ['createdAt'],
+        },
+      ],
+    }
+  );
 };
 
 const getCreatedMoviesThisMonth = (
