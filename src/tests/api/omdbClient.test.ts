@@ -5,7 +5,7 @@ describe('Test OMDB data', () => {
     const data = await getOMDBData('Inception');
     expect(data).toEqual({
       title: 'Inception',
-      released: '2010-07-15T21:00:00.000Z',
+      released: new Date('16 Jul 2010'),
       genre: 'Action, Adventure, Sci-Fi, Thriller',
       director: 'Christopher Nolan',
     });

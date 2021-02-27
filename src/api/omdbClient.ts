@@ -3,7 +3,7 @@ import { OMDB_API_KEY } from '../config';
 
 interface MovieData {
   title: string;
-  released: string;
+  released: Date;
   genre: string;
   director: string;
 }
@@ -41,10 +41,10 @@ const parseOmdbDataBody = (body: any): MovieData => {
     Genre: genre,
     Director: director,
   } = body;
-  const releasedDateIso = new Date(released).toISOString();
+  const releasedDate = new Date(released);
   return {
     title: movieTitle,
-    released: releasedDateIso,
+    released: releasedDate,
     genre,
     director,
   };
