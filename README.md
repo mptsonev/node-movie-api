@@ -1,5 +1,6 @@
 # Simple Movie API
 
+
 ## Run Locally
 
 1. Clone this repository
