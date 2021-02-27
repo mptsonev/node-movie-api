@@ -7,6 +7,7 @@ import {
   getCreatedMoviesThisMonth,
 } from '../sequelize/models/movie';
 import { getOMDBData } from './omdbClient';
+import { Role } from './role';
 
 class ApiError extends Error {
   status: number;
@@ -31,7 +32,7 @@ const createMovieRequest = async (request: Request, response: Response) => {
   }
 
   const createdMovie =
-    role === 'premium'
+    role === Role.Premium
       ? await createMoviePremiumUser(title, userName)
       : await createMovieBasicUser(title, userName);
   response.status(201).json(createdMovie);
