@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { verify, VerifyErrors } from 'jsonwebtoken';
 import { JWT_SECRET } from '../config';
 

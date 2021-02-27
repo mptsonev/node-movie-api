@@ -2,7 +2,6 @@ import { Op } from 'sequelize';
 import { createMovieRequest, getMoviesRequest } from '../../api/movies';
 import { Role } from '../../api/role';
 import { getMockedRequest, getMockedResponse } from '../testUtils';
-import * as omdbClient from '../../api/omdbClient';
 
 const testMovie = {
   title: 'Inception',

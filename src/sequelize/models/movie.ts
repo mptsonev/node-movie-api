@@ -1,4 +1,4 @@
-import { DataTypes, Sequelize, Op, Model } from 'sequelize';
+import { DataTypes, Model, Op, Sequelize } from 'sequelize';
 import { MovieData } from '../../api/omdbClient';
 import { getStartOfMonthISODate } from '../../utils/dateUtils';
 

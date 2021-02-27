@@ -1,13 +1,13 @@
 import express, { Request, Response } from 'express';
-
 import { createMovieRequest, getMoviesRequest } from './api/movies';
 import { PORT } from './config';
+import middleware from './middleware';
 
 // App
 const app = express();
 
 app.use(express.json());
-app.use('/movies', require('./middleware'));
+app.use('/movies', middleware);
 
 const errorHandler = (err: any, res: Response) => {
   const { message = 'Something went wrong!', status = 500 } = err;
