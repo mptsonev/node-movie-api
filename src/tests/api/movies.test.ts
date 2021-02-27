@@ -8,7 +8,8 @@ const testMovie = {
   title: 'Inception',
   genre: 'action, thriller',
   director: 'Christopher Nolan',
-  createdBy: 'Test user',
+  id: 1,
+  released: 'Released date',
 };
 
 const testTitle = 'Inception';
@@ -23,7 +24,8 @@ jest.mock('../../sequelize', () => ({
           title: 'Inception',
           genre: 'action, thriller',
           director: 'Christopher Nolan',
-          createdBy: 'Test user',
+          id: 1,
+          released: 'Released date',
         },
       ]),
       count: jest.fn().mockImplementation(clause => {
@@ -48,6 +50,8 @@ jest.mock('../../api/omdbClient', () => ({
       title,
       genre: 'Some genre',
       director: 'Some guy',
+      id: 1,
+      released: 'Released date',
     };
   }),
 }));
@@ -57,7 +61,7 @@ describe('Tests Movie API', () => {
     const mockedResponse = getMockedResponse();
     await getMoviesRequest(mockedResponse);
     expect(mockedResponse.status).toHaveBeenCalledWith(200);
-    expect(mockedResponse.json).toHaveBeenCalledWith([testMovie]);
+    expect(mockedResponse.json).toHaveBeenCalledWith({ data: [testMovie] });
   });
   it('Tests create invalid body', async () => {
     const mockedResponse = getMockedResponse();
@@ -95,7 +99,7 @@ describe('Tests Movie API', () => {
     } catch (err) {
       const { message, status } = err;
       expect(message).toEqual(
-        'Monthly quota reached, consider upgrading to premium'
+        'Monthly quota reached, consider upgrading to premium!'
       );
       expect(status).toEqual(402);
     }
@@ -114,10 +118,13 @@ describe('Tests Movie API', () => {
       await createMovieRequest(mockedRequest, mockedResponse);
       expect(mockedResponse.status).toHaveBeenCalledWith(201);
       expect(mockedResponse.json).toHaveBeenCalledWith({
-        createdBy: testBasicUserName,
-        title: testTitle,
-        genre: 'Some genre',
-        director: 'Some guy',
+        data: {
+          title: testTitle,
+          genre: 'Some genre',
+          director: 'Some guy',
+          id: 1,
+          released: 'Released date',
+        },
       });
     } catch (err) {
       fail('Unexpected error ' + err);
@@ -137,10 +144,13 @@ describe('Tests Movie API', () => {
       await createMovieRequest(mockedRequest, mockedResponse);
       expect(mockedResponse.status).toHaveBeenCalledWith(201);
       expect(mockedResponse.json).toHaveBeenCalledWith({
-        createdBy: testBasicUserNameLimitted,
-        title: testTitle,
-        genre: 'Some genre',
-        director: 'Some guy',
+        data: {
+          title: testTitle,
+          genre: 'Some genre',
+          director: 'Some guy',
+          id: 1,
+          released: 'Released date',
+        },
       });
     } catch (err) {
       fail('Unexpected error ' + err);

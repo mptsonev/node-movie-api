@@ -45,7 +45,7 @@ const createMovieRequest = async (request: Request, response: Response) => {
       ? await createMoviePremiumUser(title, userName)
       : await createMovieBasicUser(title, userName);
   const { id, released, genre, director } = createdMovie;
-  response.status(201).json({ data: { id, released, genre, director } });
+  response.status(201).json({ data: { id, title, released, genre, director } });
 };
 
 const createMoviePremiumUser = async (
